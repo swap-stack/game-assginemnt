@@ -7,13 +7,13 @@ from weapons import Gun, GunChoices
 class Game:
     """ Manages the game logic """
 
-    def __init__(self) -> None:
-        self.total_points = 0
+    def __init__(self, player) -> None:
+        self.player = player
+        self.player.total_points = 0
         self.selected_gun = None
         self.targets = []
 
     def spawn(self):
-        print("You can see an alien in the distance....... or is it??")
         
         animals_display = ["🐇", "🦆"]
         
@@ -26,8 +26,13 @@ class Game:
         random.shuffle(self.targets)
 
     def display_targets(self):
+        print("xxxxx............................................xxxx")
+        print("You can see an alien in the distance....... or is it??")
+        print("xxxxx............................................xxxx")
+
         random.shuffle(self.targets)
-        print(self.targets)
+        x = "              ".join([ i.display for i in self.targets])
+        print(f"\n\n{x}\n\n")
 
     def select_gun(self):
         """ Selects the type of gun a user wants to play with"""
@@ -36,22 +41,24 @@ class Game:
             self.selected_gun = Gun(name= GunChoices.SHORTGUN)
         elif choice == 2:
             self.selected_gun = Gun(name=GunChoices.PISTOL)
+        print(f"\n\nYou have chosen {self.selected_gun.get_name().name} {self.selected_gun} \n\n")
 
     def shoot(self, target_index):
         """ Simmulates shooting of an alien"""
-        print(f"\n\n\n{self.selected_gun}\n\n\n")
+        print(f"\n\n{self.selected_gun}\n\n")
+
         if 0 <= target_index < len(self.targets):
             if isinstance(self.targets[target_index], Alien):
                 self.targets[target_index].health -= self.selected_gun.damage
-                self.total_points += self.selected_gun.damage
-                print(f"Bullseye! +{self.selected_gun.damage} points, Alien Health {self.targets[target_index].health}")
+                self.player.total_points += self.selected_gun.damage
+                print(f"Bullseye! +{self.selected_gun.damage} points, Alien Health {self.targets[target_index].health}\n")
 
                 if self.targets[target_index].health <=0:
                     self.targets.pop(target_index)
 
             else:
-                print("Missed! -5 points")
-                self.total_points -= 5
+                print(f"Missed! -5 points {self.player.total_points}\n")
+                self.player.total_points += -5
                 self.targets.pop(target_index)
 
             random.shuffle(self.targets)
@@ -68,7 +75,7 @@ class Game:
             self.display_targets()
             if len(self.targets) == 1:
                 time.sleep(1)
-                print("Oh Uh.. Game Over!!")
+                print("Oh Uh.. Game Over You Lost!!")
                 break
             try:
                 target_index = int(input("Enter the index to shoot (0-3): "))
@@ -76,12 +83,10 @@ class Game:
             except ValueError:
                 print("Invalid input. Enter a number")
             time.sleep(1)
-        print(f'Game over Your score is: {self.total_points} points')
 
 
     def stop(self):
         print('Game stopped')
-
 
 
 class Player:
@@ -90,15 +95,18 @@ class Player:
         self.name = name
         self.health = 15
 
+    def display_points(self):
+        print(f"{self.name} collected {self.total_points} points")
 
 
 if __name__ == '__main__':
     choice= input("Do you want to play? Y/N")
     if choice == 'Y':
-            # user_name = input("What is your character name")
-            # user = Player(name= user_name)
-        game = Game()
+        user_name = input("Enter your character name:\n")
+        user = Player(name=user_name)
+        game = Game(player=user)
         game.play()
+        user.display_points()
     else:
         print('Ok Bye')
 

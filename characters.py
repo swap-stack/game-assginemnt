@@ -19,8 +19,11 @@ class Alien:
         # self.damage = 5
         self.health = 30
 
-    def get_damage(self):
-        return self.damage
+    def get_health(self):
+        return self.health
+
+    # def get_damage(self):
+    #     return self.damage
 
     def __repr__(self) -> str:
         return f"{self.display}"
