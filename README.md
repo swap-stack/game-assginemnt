@@ -4,3 +4,5 @@ A CLI based python game
 ```
 python game.py
 ```
+Diagram
+![alt text](https://github.com/swap-stack/game-assignment/blob/game-dev/diagram.png)
