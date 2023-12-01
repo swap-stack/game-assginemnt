@@ -1,14 +1,8 @@
 
-from enum import Enum
 import time
 import random
-
-
-class GunChoices(Enum):
-    """ Choices of Guns available"""
-    SHORTGUN = 1
-    PISTOL = 2
-
+from characters import Alien, Animal
+from weapons import Gun, GunChoices
 
 class Game:
     """ Manages the game logic """
@@ -19,7 +13,7 @@ class Game:
         self.targets = []
 
     def spawn(self):
-        print("You can see an alien in the distance.......")
+        print("You can see an alien in the distance....... or is it??")
         
         animals_display = ["🐇", "🦆"]
         
@@ -29,12 +23,15 @@ class Game:
         for _ in range(1):
             alien = Alien()
             self.targets.append(alien)
+        random.shuffle(self.targets)
 
     def display_targets(self):
+        random.shuffle(self.targets)
         print(self.targets)
 
-    def select_gun(self, choice):
+    def select_gun(self):
         """ Selects the type of gun a user wants to play with"""
+        choice = int(input("Select a gun: \n1.Shortgun\n2.Pistol\nEnter your choice (1-2) ╾━╤デ╦︻ (▀̿ĺ̯▀̿ ̿): "))
         if choice == 1:
             self.selected_gun = Gun(name= GunChoices.SHORTGUN)
         elif choice == 2:
@@ -42,34 +39,37 @@ class Game:
 
     def shoot(self, target_index):
         """ Simmulates shooting of an alien"""
-
+        print(f"\n\n\n{self.selected_gun}\n\n\n")
         if 0 <= target_index < len(self.targets):
             if isinstance(self.targets[target_index], Alien):
-                # print(f"Bullseye! +{self.selected_gun.damage} points")
-                # self.total_points += self.selected_gun.damage
-                self.total_points += 10
+                self.targets[target_index].health -= self.selected_gun.damage
+                self.total_points += self.selected_gun.damage
+                print(f"Bullseye! +{self.selected_gun.damage} points, Alien Health {self.targets[target_index].health}")
+
+                if self.targets[target_index].health <=0:
+                    self.targets.pop(target_index)
 
             else:
                 print("Missed! -5 points")
                 self.total_points -= 5
-            self.targets.pop(target_index)
+                self.targets.pop(target_index)
+
+            random.shuffle(self.targets)
 
         else:
             print('Invalid Target')
-        
-
-        # if self.selected_gun:
-        #     damage = self.selected_gun.damage
-        #     alien.health -= damage
-        #     if alien.health <= 0:
-        #         print("Alien dead")
-        #         del alien
-
+ 
+ 
     def play(self):
         print('')
         self.spawn()
-        while self.targets:
+        self.select_gun()
+        while any(type(obj) == Alien for obj in self.targets):
             self.display_targets()
+            if len(self.targets) == 1:
+                time.sleep(1)
+                print("Oh Uh.. Game Over!!")
+                break
             try:
                 target_index = int(input("Enter the index to shoot (0-3): "))
                 self.shoot(target_index=target_index)
@@ -82,52 +82,6 @@ class Game:
     def stop(self):
         print('Game stopped')
 
-
-class Animal:
-    """ Represents the Animal in the game"""
-
-    def __init__(self, display) -> None:
-        self.display = display
-        # self.damage = 5
-        # self.health = 10
-
-    def __repr__(self) -> str:
-        return f"{self.display}"
-
-
-class Alien:
-    """ Represents the Alien in the game"""
-
-    def __init__(self) -> None:
-        self.display = "😈"
-        # self.damage = 5
-        # self.health = 10
-
-    def get_damage(self):
-        return self.damage
-
-
-    def __repr__(self) -> str:
-        return f"{self.display}"
-
-
-class Gun:
-    """ Represents a Weapon called Gun and its associated logic"""
-    def __init__(self, name=GunChoices.PISTOL) -> None:
-        self.name = name
-        if self.name == GunChoices.PISTOL:
-            self.damage = 3
-        elif self.name == GunChoices.SHORTGUN:
-            self.damage = 5
-
-
-    def get_damage(self):
-        """ Returns the damage of the Gun"""
-        return self.damage
-
-    def get_name(self):
-        """Returns the name of the gun"""
-        return self.name
 
 
 class Player:
