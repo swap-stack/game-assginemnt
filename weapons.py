@@ -7,6 +7,7 @@ class GunChoices(Enum):
     SHORTGUN = 1
     PISTOL = 2
 
+
 class Gun:
     """ Represents a Weapon called Gun and its associated logic"""
     def __init__(self, name=GunChoices.PISTOL) -> None:
@@ -15,7 +16,6 @@ class Gun:
             self.damage = 5
         elif self.name == GunChoices.SHORTGUN:
             self.damage = 10
-
 
     def get_damage(self):
         """ Returns the damage of the Gun"""
